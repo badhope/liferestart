@@ -1,0 +1,1048 @@
+/* ========================================
+   人生重开模拟器 - 样式表
+   作者: CodeCritic
+   描述: 游戏整体视觉样式定义
+   ======================================== */
+
+/* CSS变量定义 - 便于统一修改主题 */
+:root {
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --secondary-color: #64748b;
+    --danger-color: #ef4444;
+    --success-color: #22c55e;
+    --warning-color: #f59e0b;
+    
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-card: #334155;
+    --bg-input: #475569;
+    
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    --border-color: #475569;
+    --border-radius: 12px;
+    --border-radius-sm: 8px;
+    
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    
+    --transition: all 0.3s ease;
+}
+
+/* 重置样式 */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* 游戏主容器 */
+.game-container {
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 背景装饰 */
+.game-container::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(ellipse at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 屏幕通用样式 */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 1;
+    padding: 20px;
+}
+
+.screen.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+}
+
+/* 标题画面 */
+.title-content {
+    text-align: center;
+    animation: fadeInUp 0.8s ease;
+}
+
+.game-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 40px rgba(99, 102, 241, 0.5);
+}
+
+.game-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+    font-style: italic;
+}
+
+/* 按钮样式 */
+.btn {
+    display: inline-block;
+    padding: 14px 36px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    margin: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+}
+
+.btn-secondary {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary-color);
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    margin: 4px;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger-color), #dc2626);
+}
+
+.btn-danger:hover {
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* 创建角色画面 */
+.create-content {
+    background: var(--bg-secondary);
+    padding: 40px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: fadeInUp 0.5s ease;
+}
+
+.create-content h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    font-size: 2rem;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1rem;
+    background: var(--bg-input);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.form-group input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* 性别选择 */
+.gender-select {
+    display: flex;
+    gap: 12px;
+}
+
+.gender-btn {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.gender-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--text-primary);
+}
+
+.gender-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* 星座选择 */
+.zodiac-select {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 10px;
+    background: var(--bg-card);
+    border-radius: var(--border-radius-sm);
+}
+
+.zodiac-option {
+    padding: 8px 4px;
+    text-align: center;
+    background: var(--bg-input);
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.85rem;
+}
+
+.zodiac-option:hover {
+    border-color: var(--primary-color);
+}
+
+.zodiac-option.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* 属性分配 */
+.attribute-points {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 24px;
+}
+
+.attribute-points h3 {
+    text-align: center;
+    margin-bottom: 16px;
+    color: var(--warning-color);
+}
+
+.attribute-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.attribute-row label {
+    flex: 1;
+    font-weight: 500;
+}
+
+.attribute-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.attr-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.attr-btn.minus {
+    background: var(--danger-color);
+    color: white;
+}
+
+.attr-btn.plus {
+    background: var(--success-color);
+    color: white;
+}
+
+.attr-btn:hover {
+    transform: scale(1.1);
+}
+
+.attr-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.attr-value {
+    width: 40px;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* 游戏主界面 */
+#game-screen {
+    padding: 0;
+    justify-content: flex-start;
+}
+
+.game-header {
+    width: 100%;
+    background: var(--bg-secondary);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 1.1rem;
+}
+
+#player-name-display {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+#player-age {
+    background: var(--primary-color);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+#player-gender {
+    font-size: 1.3rem;
+}
+
+.life-stage {
+    background: linear-gradient(135deg, var(--warning-color), #f97316);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* 游戏主体区域 */
+.game-main {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    flex: 1;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* 角色面板 */
+.character-panel {
+    width: 280px;
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* 角色头像 */
+.character-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+    transition: var(--transition);
+}
+
+.avatar-body {
+    width: 80px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 40px 40px 0 0;
+    position: absolute;
+    bottom: 10px;
+}
+
+.avatar-face {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    position: absolute;
+    top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+/* 属性展示 */
+.attribute-display {
+    width: 100%;
+}
+
+.attr-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.attr-icon {
+    font-size: 1.3rem;
+    margin-right: 10px;
+    width: 30px;
+    text-align: center;
+}
+
+.attr-name {
+    flex: 1;
+    color: var(--text-secondary);
+}
+
+.attr-num {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    min-width: 30px;
+    text-align: right;
+}
+
+/* 金钱展示 */
+.money-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-radius: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* 事件区域 */
+.event-area {
+    flex: 1;
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+.event-text {
+    flex: 1;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+    margin-bottom: 30px;
+    min-height: 150px;
+}
+
+.event-text p {
+    margin-bottom: 15px;
+    animation: fadeIn 0.5s ease;
+}
+
+/* 事件选项 */
+.event-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.choice-btn {
+    padding: 16px 24px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.choice-btn:hover {
+    border-color: var(--primary-color);
+    background: rgba(99, 102, 241, 0.1);
+    transform: translateX(5px);
+}
+
+.choice-btn:active {
+    transform: translateX(5px) scale(0.98);
+}
+
+/* 游戏底部 */
+.game-footer {
+    width: 100%;
+    background: var(--bg-secondary);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 人生总结画面 */
+.summary-content {
+    background: var(--bg-secondary);
+    padding: 40px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    animation: fadeInUp 0.5s ease;
+}
+
+.summary-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    background: linear-gradient(135deg, var(--primary-color), #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.summary-stage {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    margin-bottom: 30px;
+}
+
+.stage-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+}
+
+.stage-info {
+    text-align: left;
+}
+
+.stage-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.stage-info p {
+    color: var(--text-secondary);
+    margin: 3px 0;
+}
+
+.summary-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: var(--bg-card);
+    border-radius: 8px;
+}
+
+.stat-item span:first-child {
+    color: var(--text-secondary);
+}
+
+.stat-item span:last-child {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.summary-evaluation {
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+}
+
+.summary-evaluation h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: var(--warning-color);
+}
+
+.summary-rank {
+    padding: 15px;
+    background: var(--bg-card);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 30px;
+}
+
+/* 动画定义 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(99, 102, 241, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.8); }
+}
+
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.btn-active {
+    background: linear-gradient(135deg, var(--success-color), #16a34a) !important;
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
+}
+
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+.glowing {
+    animation: glow 2s ease-in-out infinite;
+}
+
+.event-text h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    animation: fadeInUp 0.5s ease;
+}
+
+.event-text p {
+    animation: fadeIn 0.5s ease;
+    animation-delay: 0.2s;
+    animation-fill-mode: both;
+}
+
+.choice-btn {
+    animation: fadeInUp 0.3s ease;
+    animation-fill-mode: both;
+}
+
+.choice-btn:nth-child(1) { animation-delay: 0.1s; }
+.choice-btn:nth-child(2) { animation-delay: 0.2s; }
+.choice-btn:nth-child(3) { animation-delay: 0.3s; }
+.choice-btn:nth-child(4) { animation-delay: 0.4s; }
+
+.choice-btn:hover {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+    border-color: var(--primary-color);
+    transform: translateX(10px);
+}
+
+.choice-btn.positive {
+    border-left: 4px solid var(--success-color);
+}
+
+.choice-btn.negative {
+    border-left: 4px solid var(--danger-color);
+}
+
+.choice-btn.neutral {
+    border-left: 4px solid var(--warning-color);
+}
+
+.attribute-panel-anim {
+    animation: fadeIn 0.5s ease;
+}
+
+.money-change {
+    animation: float 1s ease forwards;
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+.money-change.negative {
+    color: var(--danger-color);
+}
+
+.screen-enter {
+    animation: fadeInUp 0.5s ease;
+}
+
+.screen-exit {
+    animation: fadeIn 0.3s ease reverse;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--bg-card);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-card);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), #8b5cf6);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    animation: gradient-shift 2s ease infinite;
+    background-size: 200% 200%;
+}
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+}
+
+.tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+    bottom: calc(100% + 8px);
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.badge-success {
+    background: var(--success-color);
+    color: white;
+}
+
+.badge-warning {
+    background: var(--warning-color);
+    color: var(--bg-primary);
+}
+
+.badge-danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+/* 响应式设计 */
+@media (max-width: 900px) {
+    .game-main {
+        flex-direction: column;
+    }
+    
+    .character-panel {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .attribute-display {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .game-title {
+        font-size: 2.5rem;
+    }
+    
+    .summary-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .game-header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+    }
+    
+    .game-main {
+        padding: 15px;
+    }
+    
+    .create-content {
+        padding: 25px;
+    }
+    
+    .zodiac-select {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .game-title {
+        font-size: 2rem;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+    
+    .player-info {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .event-text {
+        font-size: 1rem;
+    }
+    
+    .choice-btn {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .game-footer {
+        padding: 10px;
+    }
+    
+    .game-footer .btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .summary-stage {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .stage-info {
+        text-align: center;
+    }
+}
+
+/* 超小屏幕 */
+@media (max-width: 400px) {
+    .game-title {
+        font-size: 1.6rem;
+    }
+    
+    .game-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .gender-select {
+        flex-direction: column;
+    }
+    
+    .attribute-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .attribute-control {
+        justify-content: center;
+    }
+    
+    .character-avatar {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-card);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-hover);
+}
+
+/* 工具类 */
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}

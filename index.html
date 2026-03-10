@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人生重开模拟器</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 游戏主容器 -->
+        <div class="game-container">
+            <!-- 标题画面 -->
+            <div id="title-screen" class="screen active">
+                <div class="title-content">
+                    <h1 class="game-title">人生重开模拟器</h1>
+                    <p class="game-subtitle">やり直すんだ。そして、次はうまくやる。</p>
+                    <button id="start-game" class="btn btn-primary">开始新人生</button>
+                    <button id="continue-game" class="btn btn-secondary" style="display: none;">继续游戏</button>
+                </div>
+            </div>
+
+            <!-- 角色创建画面 -->
+            <div id="create-screen" class="screen">
+                <div class="create-content">
+                    <h2>创建角色</h2>
+                    <div class="form-group">
+                        <label for="player-name">姓名</label>
+                        <input type="text" id="player-name" placeholder="请输入你的名字" maxlength="20">
+                    </div>
+                    <div class="form-group">
+                        <label>性别</label>
+                        <div class="gender-select">
+                            <button class="gender-btn active" data-gender="male">♂ 男</button>
+                            <button class="gender-btn" data-gender="female">♀ 女</button>
+                            <button class="gender-btn" data-gender="other">⚥ 其他</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>生日星座（影响初始属性）</label>
+                        <div class="zodiac-select" id="zodiac-select">
+                            <!-- 星座选项由JS动态生成 -->
+                        </div>
+                    </div>
+                    <div class="attribute-points">
+                        <h3>属性分配 <span id="points-remaining">10</span> 点可用</h3>
+                        <div class="attribute-row">
+                            <label>智力 💡</label>
+                            <div class="attribute-control">
+                                <button class="attr-btn minus" data-attr="intelligence">-</button>
+                                <span id="attr-intelligence" class="attr-value">5</span>
+                                <button class="attr-btn plus" data-attr="intelligence">+</button>
+                            </div>
+                        </div>
+                        <div class="attribute-row">
+                            <label>体质 💪</label>
+                            <div class="attribute-control">
+                                <button class="attr-btn minus" data-attr="constitution">-</button>
+                                <span id="attr-constitution" class="attr-value">5</span>
+                                <button class="attr-btn plus" data-attr="constitution">+</button>
+                            </div>
+                        </div>
+                        <div class="attribute-row">
+                            <label>魅力 😊</label>
+                            <div class="attribute-control">
+                                <button class="attr-btn minus" data-attr="charisma">-</button>
+                                <span id="attr-charisma" class="attr-value">5</span>
+                                <button class="attr-btn plus" data-attr="charisma">+</button>
+                            </div>
+                        </div>
+                        <div class="attribute-row">
+                            <label>运气 🍀</label>
+                            <div class="attribute-control">
+                                <button class="attr-btn minus" data-attr="luck">-</button>
+                                <span id="attr-luck" class="attr-value">5</span>
+                                <button class="attr-btn plus" data-attr="luck">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="confirm-create" class="btn btn-primary">开始人生</button>
+                    <button id="back-to-title" class="btn btn-secondary">返回</button>
+                </div>
+            </div>
+
+            <!-- 游戏主界面 -->
+            <div id="game-screen" class="screen">
+                <div class="game-header">
+                    <div class="player-info">
+                        <span id="player-name-display">玩家</span>
+                        <span id="player-age">0岁</span>
+                        <span id="player-gender">♂</span>
+                    </div>
+                    <div class="life-stage" id="life-stage">婴儿期</div>
+                </div>
+                
+                <div class="game-main">
+                    <div class="character-panel">
+                        <div class="character-avatar" id="character-avatar">
+                            <div class="avatar-body"></div>
+                            <div class="avatar-face"></div>
+                        </div>
+                        <div class="attribute-display">
+                            <div class="attr-item">
+                                <span class="attr-icon">💡</span>
+                                <span class="attr-name">智力</span>
+                                <span id="display-intelligence" class="attr-num">5</span>
+                            </div>
+                            <div class="attr-item">
+                                <span class="attr-icon">💪</span>
+                                <span class="attr-name">体质</span>
+                                <span id="display-constitution" class="attr-num">5</span>
+                            </div>
+                            <div class="attr-item">
+                                <span class="attr-icon">😊</span>
+                                <span class="attr-name">魅力</span>
+                                <span id="display-charisma" class="attr-num">5</span>
+                            </div>
+                            <div class="attr-item">
+                                <span class="attr-icon">🍀</span>
+                                <span class="attr-name">运气</span>
+                                <span id="display-luck" class="attr-num">5</span>
+                            </div>
+                        </div>
+                        <div class="money-display">
+                            <span class="money-icon">💰</span>
+                            <span id="display-money">0</span>
+                        </div>
+                    </div>
+
+                    <div class="event-area">
+                        <div class="event-text" id="event-text">
+                            <p>你出生了。这是一个全新的开始...</p>
+                        </div>
+                        <div class="event-choices" id="event-choices">
+                            <!-- 事件选项由JS动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-footer">
+                    <button id="auto-play" class="btn btn-small">自动播放</button>
+                    <button id="speed-control" class="btn btn-small">加速 1x</button>
+                    <button id="save-game" class="btn btn-small">存档</button>
+                    <button id="end-life" class="btn btn-small btn-danger">结束人生</button>
+                </div>
+            </div>
+
+            <!-- 人生总结画面 -->
+            <div id="summary-screen" class="screen">
+                <div class="summary-content">
+                    <h2>人生总结</h2>
+                    <div class="summary-stage">
+                        <div class="stage-icon" id="final-avatar"></div>
+                        <div class="stage-info">
+                            <h3 id="final-name">玩家</h3>
+                            <p id="final-age">享年: 0岁</p>
+                            <p id="final-gender">性别: 男</p>
+                        </div>
+                    </div>
+                    <div class="summary-stats">
+                        <div class="stat-item">
+                            <span>最高智力</span>
+                            <span id="final-max-int">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>最高体质</span>
+                            <span id="final-max-con">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>最高魅力</span>
+                            <span id="final-max-cha">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>总赚钱</span>
+                            <span id="final-total-money">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>事件经历</span>
+                            <span id="final-events">0</span>
+                        </div>
+                    </div>
+                    <div class="summary-evaluation" id="summary-evaluation">
+                        <!-- 人生评价由JS生成 -->
+                    </div>
+                    <div class="summary-rank" id="summary-rank">
+                        <!-- 排名由JS生成 -->
+                    </div>
+                    <button id="restart-game" class="btn btn-primary">重新开始</button>
+                    <button id="back-to-title-from-summary" class="btn btn-secondary">返回标题</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/data/events.js"></script>
+    <script src="js/data/ending.js"></script>
+    <script src="js/core/player.js"></script>
+    <script src="js/core/eventSystem.js"></script>
+    <script src="js/core/gameEngine.js"></script>
+    <script src="js/ui/screenManager.js"></script>
+    <script src="js/ui/animation.js"></script>
+    <script src="js/utils/saveSystem.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

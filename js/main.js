@@ -1,0 +1,552 @@
+/**
+ * 游戏主入口
+ * 负责游戏初始化、事件绑定和整体流程控制
+ */
+
+class Game {
+    /**
+     * 创建游戏实例
+     */
+    constructor() {
+        this.engine = null;
+        this.screenManager = null;
+        this.uiUpdater = null;
+        this.animationManager = null;
+        this.soundManager = null;
+        
+        // 玩家创建相关
+        this.selectedGender = 'male';
+        this.selectedZodiac = null;
+        this.attributePoints = CONFIG.ATTRIBUTES.initialPoints;
+        this.attributes = {
+            intelligence: CONFIG.ATTRIBUTES.defaultValue,
+            constitution: CONFIG.ATTRIBUTES.defaultValue,
+            charisma: CONFIG.ATTRIBUTES.defaultValue,
+            luck: CONFIG.ATTRIBUTES.defaultValue
+        };
+        
+        this.init();
+    }
+
+    /**
+     * 初始化游戏
+     */
+    init() {
+        // 添加动画样式
+        this.animationManager = new AnimationManager();
+        this.animationManager.addCSSToDocument();
+        
+        // 初始化屏幕管理器
+        this.screenManager = new ScreenManager();
+        
+        // 初始化UI更新器
+        this.uiUpdater = new UIUpdater(this.screenManager);
+        
+        // 初始化音效管理器
+        this.soundManager = new SoundManager();
+        
+        // 绑定界面交互事件
+        this.bindUIEvents();
+        
+        // 初始化星座选择
+        this.initZodiacSelect();
+        
+        // 检查是否有存档
+        this.checkSaveData();
+        
+        console.log('游戏初始化完成');
+    }
+
+    /**
+     * 绑定UI事件
+     */
+    bindUIEvents() {
+        // 性别选择
+        const genderBtns = document.querySelectorAll('.gender-btn');
+        genderBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                genderBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.selectedGender = btn.dataset.gender;
+            });
+        });
+
+        // 属性分配按钮
+        this.bindAttributeButtons();
+        
+        // 游戏控制按钮
+        const autoBtn = document.getElementById('auto-play');
+        if (autoBtn) {
+            autoBtn.addEventListener('click', () => this.toggleAutoPlay());
+        }
+        
+        const speedBtn = document.getElementById('speed-control');
+        if (speedBtn) {
+            speedBtn.addEventListener('click', () => this.toggleSpeed());
+        }
+        
+        const saveBtn = document.getElementById('save-game');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => this.saveGame());
+        }
+        
+        const endBtn = document.getElementById('end-life');
+        if (endBtn) {
+            endBtn.addEventListener('click', () => this.confirmEndLife());
+        }
+    }
+
+    /**
+     * 绑定属性分配按钮
+     */
+    bindAttributeButtons() {
+        const minusBtns = document.querySelectorAll('.attr-btn.minus');
+        const plusBtns = document.querySelectorAll('.attr-btn.plus');
+        
+        minusBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const attr = btn.dataset.attr;
+                this.adjustAttribute(attr, -1);
+            });
+        });
+        
+        plusBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const attr = btn.dataset.attr;
+                this.adjustAttribute(attr, 1);
+            });
+        });
+    }
+
+    /**
+     * 调整属性值
+     * @param {string} attr - 属性名
+     * @param {number} delta - 变化量
+     */
+    adjustAttribute(attr, delta) {
+        const currentValue = this.attributes[attr];
+        const newValue = currentValue + delta;
+        
+        // 检查是否可以调整
+        if (delta > 0) {
+            // 增加属性
+            if (this.attributePoints <= 0) return;
+            if (newValue > CONFIG.ATTRIBUTES.maxValue) return;
+        } else {
+            // 减少属性
+            if (newValue < CONFIG.ATTRIBUTES.minInitialValue) return;
+        }
+        
+        // 更新属性值
+        this.attributes[attr] = newValue;
+        this.attributePoints -= delta;
+        
+        // 更新显示
+        this.updateAttributeDisplay(attr);
+        this.updatePointsDisplay();
+    }
+
+    /**
+     * 更新属性显示
+     * @param {string} attr - 属性名
+     */
+    updateAttributeDisplay(attr) {
+        const el = document.getElementById(`attr-${attr}`);
+        if (el) {
+            el.textContent = this.attributes[attr];
+        }
+        
+        // 更新按钮状态
+        this.updateButtonStates(attr);
+    }
+
+    /**
+     * 更新按钮状态
+     * @param {string} attr - 属性名
+     */
+    updateButtonStates(attr) {
+        const minusBtn = document.querySelector(`.attr-btn.minus[data-attr="${attr}"]`);
+        const plusBtn = document.querySelector(`.attr-btn.plus[data-attr="${attr}"]`);
+        
+        if (minusBtn) {
+            minusBtn.disabled = this.attributes[attr] <= CONFIG.ATTRIBUTES.minInitialValue;
+        }
+        
+        if (plusBtn) {
+            plusBtn.disabled = this.attributes[attr] >= CONFIG.ATTRIBUTES.maxValue || this.attributePoints <= 0;
+        }
+    }
+
+    /**
+     * 更新剩余点数显示
+     */
+    updatePointsDisplay() {
+        const el = document.getElementById('points-remaining');
+        if (el) {
+            el.textContent = this.attributePoints;
+        }
+    }
+
+    /**
+     * 初始化星座选择
+     */
+    initZodiacSelect() {
+        const container = document.getElementById('zodiac-select');
+        if (!container) return;
+        
+        const zodiacList = Object.entries(CONFIG.ZODIAC);
+        
+        zodiacList.forEach(([key, zodiac]) => {
+            const option = document.createElement('div');
+            option.className = 'zodiac-option';
+            option.textContent = zodiac.emoji + ' ' + zodiac.name;
+            option.dataset.zodiac = key;
+            
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.zodiac-option').forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                this.selectedZodiac = key;
+            });
+            
+            container.appendChild(option);
+        });
+    }
+
+    /**
+     * 检查存档数据
+     */
+    checkSaveData() {
+        const hasSave = SaveSystem.hasSave();
+        const continueBtn = document.getElementById('continue-game');
+        
+        if (continueBtn) {
+            continueBtn.style.display = hasSave ? 'inline-block' : 'none';
+            
+            if (hasSave) {
+                continueBtn.addEventListener('click', () => this.continueGame());
+            }
+        }
+    }
+
+    /**
+     * 创建角色并开始游戏
+     */
+    createCharacter() {
+        // 获取玩家名称
+        const nameInput = document.getElementById('player-name');
+        const playerName = nameInput.value.trim() || '玩家';
+        
+        // 验证属性点分配
+        if (this.attributePoints !== 0) {
+            alert('请分配完所有属性点！');
+            return;
+        }
+        
+        // 获取星座加成
+        let zodiacBonus = {};
+        if (this.selectedZodiac && CONFIG.ZODIAC[this.selectedZodiac]) {
+            zodiacBonus = CONFIG.ZODIAC[this.selectedZodiac].bonus;
+        }
+        
+        // 创建游戏配置
+        const config = {
+            name: playerName,
+            gender: this.selectedGender,
+            intelligence: this.attributes.intelligence,
+            constitution: this.attributes.constitution,
+            charisma: this.attributes.charisma,
+            luck: this.attributes.luck,
+            zodiacBonus: zodiacBonus
+        };
+        
+        // 初始化游戏引擎
+        this.engine = new GameEngine();
+        
+        // 绑定引擎回调
+        this.bindEngineCallbacks();
+        
+        // 初始化新游戏
+        this.engine.initNewGame(config);
+        
+        // 显示游戏画面
+        this.screenManager.showGameScreen();
+        
+        // 更新UI
+        this.updateGameUI();
+        
+        // 启动游戏
+        this.engine.start();
+        
+        console.log('游戏开始！', config);
+    }
+
+    /**
+     * 绑定游戏引擎回调
+     */
+    bindEngineCallbacks() {
+        // 事件触发回调
+        this.engine.onEventTriggered = (event) => {
+            this.uiUpdater.updateEvent(event);
+            this.animationManager.pulse(document.querySelector('.event-area'));
+        };
+        
+        // 选择回调
+        this.engine.onChoiceMade = (result) => {
+            if (result.success) {
+                // 显示结果消息
+                this.uiUpdater.showResultMessage(result.result);
+                
+                // 更新属性显示
+                this.uiUpdater.updateAttributes(this.engine.player.attributes);
+                
+                // 更新金钱显示
+                this.uiUpdater.updateMoney(this.engine.player.money);
+                
+                // 动画效果
+                const choiceArea = document.querySelector('.event-choices');
+                if (choiceArea) {
+                    this.animationManager.fadeOut(choiceArea);
+                }
+                
+                // 自动继续或等待
+                if (!this.engine.isAutoPlaying) {
+                    // 显示确认按钮让玩家继续
+                    this.showContinueButton();
+                }
+            }
+        };
+        
+        // 年龄变化回调
+        this.engine.onAgeChanged = (age, stage) => {
+            this.uiUpdater.updatePlayerInfo(this.engine.player);
+            this.uiUpdater.showAgeChange(age);
+        };
+        
+        // 人生阶段变化回调
+        this.engine.onStageChanged = (stage) => {
+            this.uiUpdater.updateLifeStage(stage);
+            this.animationManager.bounce(document.getElementById('life-stage'));
+        };
+        
+        // 游戏结束回调
+        this.engine.onGameOver = (ending) => {
+            this.uiUpdater.updateSummary(ending, this.engine.player);
+            this.screenManager.showSummaryScreen();
+        };
+        
+        // 属性变化回调
+        this.engine.onAttributeChanged = (attributes, changes) => {
+            // 显示属性变化动画
+            for (const attr in changes) {
+                if (attr !== 'money' && attr !== 'cost') {
+                    const el = document.getElementById(`display-${attr}`);
+                    if (el) {
+                        this.animationManager.attributeChange(el, changes[attr]);
+                    }
+                }
+            }
+        };
+    }
+
+    /**
+     * 显示继续按钮
+     */
+    showContinueButton() {
+        const choicesEl = document.getElementById('event-choices');
+        if (!choicesEl) return;
+        
+        const continueBtn = document.createElement('button');
+        continueBtn.className = 'btn btn-primary';
+        continueBtn.textContent = '继续';
+        continueBtn.addEventListener('click', () => {
+            // 清除事件显示，显示等待状态
+            this.uiUpdater.clearEvent();
+            
+            // 恢复游戏
+            this.engine.resume();
+            
+            // 移除按钮
+            continueBtn.remove();
+        });
+        
+        choicesEl.appendChild(continueBtn);
+    }
+
+    /**
+     * 更新游戏UI
+     */
+    updateGameUI() {
+        if (!this.engine || !this.engine.player) return;
+        
+        const player = this.engine.player;
+        
+        // 更新玩家信息
+        this.uiUpdater.updatePlayerInfo(player);
+        
+        // 更新属性
+        this.uiUpdater.updateAttributes(player.attributes);
+        
+        // 更新金钱
+        this.uiUpdater.updateMoney(player.money);
+        
+        // 更新头像
+        this.uiUpdater.updateAvatar(player.lifeStage, player.gender);
+    }
+
+    /**
+     * 处理玩家选择
+     * @param {number} choiceIndex - 选择索引
+     */
+    makeChoice(choiceIndex) {
+        if (!this.engine) return;
+        
+        const result = this.engine.makeChoice(choiceIndex);
+        
+        if (!result.success) {
+            console.error('选择处理失败:', result.message);
+        }
+    }
+
+    /**
+     * 切换自动播放
+     */
+    toggleAutoPlay() {
+        if (!this.engine) return;
+        
+        const isAuto = this.engine.toggleAutoPlay();
+        this.uiUpdater.updateButtonStates(isAuto, this.engine.playSpeed);
+    }
+
+    /**
+     * 切换游戏速度
+     */
+    toggleSpeed() {
+        if (!this.engine) return;
+        
+        const speed = this.engine.toggleSpeed();
+        this.uiUpdater.updateButtonStates(this.engine.isAutoPlaying, speed);
+    }
+
+    /**
+     * 保存游戏
+     */
+    saveGame() {
+        if (!this.engine) return;
+        
+        const saveData = this.engine.getSaveData();
+        const success = SaveSystem.save(saveData, 0);
+        
+        if (success) {
+            alert('游戏已保存！');
+        } else {
+            alert('保存失败！');
+        }
+    }
+
+    /**
+     * 确认结束人生
+     */
+    confirmEndLife() {
+        if (!this.engine) return;
+        
+        if (confirm('确定要提前结束人生吗？')) {
+            this.engine.forceEndLife();
+        }
+    }
+
+    /**
+     * 继续游戏
+     */
+    continueGame() {
+        const saveData = SaveSystem.load(0);
+        
+        if (!saveData || !saveData.player) {
+            alert('存档已损坏！');
+            return;
+        }
+        
+        // 初始化游戏引擎
+        this.engine = new GameEngine();
+        
+        // 绑定回调
+        this.bindEngineCallbacks();
+        
+        // 加载存档
+        this.engine.loadGame(saveData);
+        
+        // 显示游戏画面
+        this.screenManager.showGameScreen();
+        
+        // 更新UI
+        this.updateGameUI();
+        
+        // 启动游戏
+        this.engine.start();
+        
+        console.log('继续游戏');
+    }
+
+    /**
+     * 重新开始游戏
+     */
+    restart() {
+        // 重置属性
+        this.attributePoints = CONFIG.ATTRIBUTES.initialPoints;
+        this.attributes = {
+            intelligence: CONFIG.ATTRIBUTES.defaultValue,
+            constitution: CONFIG.ATTRIBUTES.defaultValue,
+            charisma: CONFIG.ATTRIBUTES.defaultValue,
+            luck: CONFIG.ATTRIBUTES.defaultValue
+        };
+        
+        // 重置选择
+        this.selectedGender = 'male';
+        this.selectedZodiac = null;
+        
+        // 重置UI显示
+        this.resetCreateUI();
+        
+        // 显示创建画面
+        this.screenManager.showCreateScreen();
+    }
+
+    /**
+     * 重置创建界面
+     */
+    resetCreateUI() {
+        // 重置名称输入
+        const nameInput = document.getElementById('player-name');
+        if (nameInput) {
+            nameInput.value = '';
+        }
+        
+        // 重置性别选择
+        document.querySelectorAll('.gender-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector('.gender-btn[data-gender="male"]').classList.add('active');
+        
+        // 重置星座选择
+        document.querySelectorAll('.zodiac-option').forEach(opt => {
+            opt.classList.remove('active');
+        });
+        
+        // 重置属性显示
+        ['intelligence', 'constitution', 'charisma', 'luck'].forEach(attr => {
+            this.updateAttributeDisplay(attr);
+        });
+        this.updatePointsDisplay();
+    }
+
+    /**
+     * 获取玩家引用
+     */
+    get player() {
+        return this.engine ? this.engine.player : null;
+    }
+}
+
+// 页面加载完成后初始化游戏
+document.addEventListener('DOMContentLoaded', () => {
+    window.game = new Game();
+});
