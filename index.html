@@ -2,7 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="人生重开模拟器 - 一款让你体验不同人生选择的人生模拟游戏">
+    <meta name="theme-color" content="#6366f1">
     <title>人生重开模拟器 | Life Restart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,10 +14,30 @@
 </head>
 <body>
     <div id="app">
-        <div class="bg-effects">
-            <div class="bg-gradient"></div>
+        <div class="loading-screen" id="loading-screen">
+            <div class="loading-logo">
+                <div class="loading-ring"></div>
+                <div class="loading-ring"></div>
+                <div class="loading-ring"></div>
+                <div class="loading-icon">🎮</div>
+            </div>
+            <div class="loading-text">人生重开模拟器</div>
+            <div class="loading-progress">
+                <div class="loading-progress-bar" id="loading-progress"></div>
+            </div>
+            <div class="loading-tips" id="loading-tips">正在加载人生...</div>
+        </div>
+
+        <div class="bg-effects" id="bg-effects">
+            <div class="bg-layer-base"></div>
+            <div class="bg-layer-grid"></div>
+            <div class="bg-layer-glow">
+                <div class="glow-orb glow-orb-1"></div>
+                <div class="glow-orb glow-orb-2"></div>
+                <div class="glow-orb glow-orb-3"></div>
+            </div>
             <div class="bg-particles" id="particles"></div>
-            <div class="bg-grid"></div>
+            <div class="bg-layer-noise"></div>
         </div>
 
         <div class="game-container">

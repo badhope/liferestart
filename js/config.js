@@ -4,10 +4,8 @@
  */
 
 const CONFIG = {
-    // 游戏版本
-    VERSION: '1.5.0',
+    VERSION: '2.0.0',
     
-    // 调试模式
     DEBUG: false,
     
     // 属性配置

@@ -4,9 +4,6 @@
  */
 
 class Game {
-    /**
-     * 创建游戏实例
-     */
     constructor() {
         this.engine = null;
         this.screenManager = null;
@@ -14,7 +11,6 @@ class Game {
         this.animationManager = null;
         this.soundManager = null;
         
-        // 玩家创建相关
         this.selectedGender = 'male';
         this.selectedZodiac = null;
         this.attributePoints = CONFIG.ATTRIBUTES.initialPoints;
@@ -25,40 +21,98 @@ class Game {
             luck: CONFIG.ATTRIBUTES.defaultValue
         };
         
+        this.loadingTips = [
+            '正在加载人生...',
+            '准备命运的骰子...',
+            '编织命运的丝线...',
+            '计算人生可能性...',
+            '加载天赋系统...',
+            '初始化事件引擎...',
+            '准备开始新的人生...'
+        ];
+        
         this.init();
     }
 
-    /**
-     * 初始化游戏
-     */
-    init() {
-        // 添加动画样式
+    async init() {
+        await this.showLoadingScreen();
+        
         this.animationManager = new AnimationManager();
         this.animationManager.addCSSToDocument();
         
-        // 初始化屏幕管理器
         this.screenManager = new ScreenManager();
-        
-        // 初始化UI更新器
         this.uiUpdater = new UIUpdater(this.screenManager);
-        
-        // 初始化音效管理器
         this.soundManager = new SoundManager();
         
-        // 绑定界面交互事件
         this.bindUIEvents();
-        
-        // 初始化星座选择
         this.initZodiacSelect();
-        
-        // 初始化天赋选择
         this.initTalentSelect();
-        
-        // 检查是否有存档
         this.checkSaveData();
+        this.initParticles();
+        
+        await this.hideLoadingScreen();
         
         if (CONFIG.DEBUG) {
             console.log('游戏初始化完成');
+        }
+    }
+
+    async showLoadingScreen() {
+        const progressBar = document.getElementById('loading-progress');
+        const tipsEl = document.getElementById('loading-tips');
+        let progress = 0;
+        
+        return new Promise(resolve => {
+            const interval = setInterval(() => {
+                progress += Math.random() * 15 + 5;
+                if (progress > 100) progress = 100;
+                
+                if (progressBar) {
+                    progressBar.style.width = progress + '%';
+                }
+                
+                if (tipsEl && Math.random() > 0.7) {
+                    const randomTip = this.loadingTips[Math.floor(Math.random() * this.loadingTips.length)];
+                    tipsEl.textContent = randomTip;
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(resolve, 300);
+                }
+            }, 100);
+        });
+    }
+
+    async hideLoadingScreen() {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+            await new Promise(resolve => setTimeout(resolve, 800));
+            loadingScreen.remove();
+        }
+    }
+
+    initParticles() {
+        const container = document.getElementById('particles');
+        if (!container) return;
+        
+        const particleCount = 30;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+            particle.style.opacity = 0.2 + Math.random() * 0.4;
+            particle.style.width = (2 + Math.random() * 3) + 'px';
+            particle.style.height = particle.style.width;
+            
+            const colors = ['var(--primary-400)', 'var(--info)', 'var(--success)'];
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            container.appendChild(particle);
         }
     }
 
