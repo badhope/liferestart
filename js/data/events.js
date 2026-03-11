@@ -1346,9 +1346,6 @@ function filterEvents(events, player) {
     });
 }
 
-/**
- * 打印事件统计信息（仅开发模式）
- */
 function printEventStats() {
     if (typeof CONFIG !== 'undefined' && CONFIG.DEBUG) {
         let total = 0;

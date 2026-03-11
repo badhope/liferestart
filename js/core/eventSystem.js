@@ -88,12 +88,12 @@ const EventDebugger = {
 
     enable() {
         this.enabled = true;
-        console.log('[事件调试] 调试模式已开启');
+        if (CONFIG.DEBUG) console.log('[事件调试] 调试模式已开启');
     },
 
     disable() {
         this.enabled = false;
-        console.log('[事件调试] 调试模式已关闭');
+        if (CONFIG.DEBUG) console.log('[事件调试] 调试模式已关闭');
     },
 
     log(event, action, details = {}) {
@@ -113,7 +113,7 @@ const EventDebugger = {
             this.eventLog.shift();
         }
 
-        console.log(`[事件调试] ${action}: ${event.title}`, details);
+        if (CONFIG.DEBUG) console.log(`[事件调试] ${action}: ${event.title}`, details);
     },
 
     getLog() {
@@ -122,7 +122,7 @@ const EventDebugger = {
 
     clearLog() {
         this.eventLog = [];
-        console.log('[事件调试] 日志已清空');
+        if (CONFIG.DEBUG) console.log('[事件调试] 日志已清空');
     },
 
     exportLog() {
