@@ -41,9 +41,13 @@
                             <span class="btn-icon">📂</span>
                             <span class="btn-text">继续游戏</span>
                         </button>
+                        <button id="help-btn" class="btn btn-outline btn-lg">
+                            <span class="btn-icon">❓</span>
+                            <span class="btn-text">游戏指南</span>
+                        </button>
                     </div>
                     <div class="title-footer">
-                        <div class="version-tag">v1.2.0</div>
+                        <div class="version-tag">v1.3.0</div>
                         <div class="stats-preview" id="stats-preview">
                             <span>👥 已体验 <b id="total-players">0</b> 人</span>
                         </div>
@@ -424,6 +428,49 @@
 
         <!-- 弹窗提示 -->
         <div class="toast-container" id="toast-container"></div>
+        
+        <!-- 游戏指南弹窗 -->
+        <div id="help-modal" class="modal">
+            <div class="modal-content help-modal-content">
+                <div class="modal-header">
+                    <h2>🎮 游戏指南</h2>
+                    <button class="modal-close" id="close-help">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="help-section">
+                        <h3>📖 基本玩法</h3>
+                        <p>人生重开模拟器是一款让你体验不同人生选择的人生模拟游戏。你将从一个婴儿开始，经历童年、青年、中年、老年各个阶段，做出各种选择，影响你的人生轨迹。</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>⭐ 属性系统</h3>
+                        <ul>
+                            <li><strong>智力</strong> - 影响学习、工作表现和机会</li>
+                            <li><strong>魅力</strong> - 影响人际关系和社交机会</li>
+                            <li><strong>体质</strong> - 影响健康和寿命</li>
+                            <li><strong>运气</strong> - 影响随机事件的触发和结果</li>
+                        </ul>
+                    </div>
+                    <div class="help-section">
+                        <h3>🎯 事件类型</h3>
+                        <ul>
+                            <li><span class="event-badge priority-critical type-milestone">⭐ 人生转折点</span> - 重要的人生节点</li>
+                            <li><span class="event-badge priority-high type-career">💼 职业发展</span> - 职业相关事件</li>
+                            <li><span class="event-badge type-wealth">💰 财富机遇</span> - 金钱相关选择</li>
+                            <li><span class="event-badge">📌 随机事件</span> - 日常随机事件</li>
+                        </ul>
+                    </div>
+                    <div class="help-section">
+                        <h3>💡 提示</h3>
+                        <ul>
+                            <li>人生转折点事件优先级较高，会优先触发</li>
+                            <li>不同属性会影响事件触发的概率</li>
+                            <li>某些选择有成功率显示，三思而后行</li>
+                            <li>游戏会自动保存，随时可以继续</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="js/config.js"></script>

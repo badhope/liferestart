@@ -783,6 +783,54 @@ const EVENTS = {
                 { text: '保持稳定', effects: { constitution: 1, luck: 1 } },
                 { text: '另寻出路', effects: { luck: -1, charisma: 1 }, probability: 0.5 }
             ]
+        },
+        {
+            id: 'young_career_path',
+            title: '职业规划',
+            description: '你需要进行职业规划，这将影响你的未来发展。',
+            type: 'career',
+            priority: 75,
+            choices: [
+                { text: '技术路线', effects: { intelligence: 2 } },
+                { text: '管理路线', effects: { charisma: 2 } },
+                { text: '创业路线', effects: { luck: -1, charisma: 1 }, probability: 0.4 }
+            ]
+        },
+        {
+            id: 'young_investment',
+            title: '投资理财',
+            description: '你有了些积蓄，考虑进行投资理财。',
+            type: 'wealth',
+            priority: 50,
+            choices: [
+                { text: '股票投资', effects: { luck: 2 }, probability: 0.3, money: 50000 },
+                { text: '购买房产', effects: { constitution: 1 }, money: -200000 },
+                { text: '存入银行', effects: { luck: 1 }, money: 10000 }
+            ]
+        },
+        {
+            id: 'young_milestone_marriage',
+            title: '婚姻大事',
+            description: '你遇到了生命中的另一半，考虑步入婚姻的殿堂。',
+            type: 'milestone',
+            priority: 100,
+            choices: [
+                { text: '盛大婚礼', effects: { charisma: 1, luck: 1 }, money: -100000, probability: 0.6 },
+                { text: '简单婚礼', effects: { constitution: 1, luck: 1 }, money: -30000 },
+                { text: '再等等', effects: { intelligence: 1 }, probability: 0.4 }
+            ]
+        },
+        {
+            id: 'young_milestone_child',
+            title: '喜得贵子',
+            description: '你的孩子出生了，生命的延续让你感到无比幸福。',
+            type: 'milestone',
+            priority: 100,
+            choices: [
+                { text: '全职带娃', effects: { constitution: -1, charisma: 1 } },
+                { text: '请保姆', effects: { money: -50000 }, probability: 0.5 },
+                { text: '父母帮忙', effects: { charisma: 1, luck: 1 } }
+            ]
         }
     ],
 
@@ -1230,6 +1278,42 @@ const EVENTS = {
                 { text: '大额捐赠', effects: { charisma: 2, luck: 2 }, cost: 100000 },
                 { text: '小额捐赠', effects: { charisma: 1, luck: 1 }, cost: 1000 },
                 { text: '拒绝', effects: { luck: -1 } }
+            ]
+        },
+        {
+            id: 'universal_treasure_hunt',
+            title: '寻宝之旅',
+            description: '你听说了一个传说中的宝藏，决定去探险。',
+            type: 'adventure',
+            priority: 60,
+            choices: [
+                { text: '深入探索', effects: { luck: 3 }, probability: 0.2, money: 100000 },
+                { text: '浅尝辄止', effects: { constitution: -1, luck: 1 }, money: 5000 },
+                { text: '放弃', effects: { luck: -1 } }
+            ]
+        },
+        {
+            id: 'universal_sudden_opportunity',
+            title: '天降机遇',
+            description: '一个千载难逢的机会突然出现在你面前。',
+            type: 'opportunity',
+            priority: 80,
+            nextEvent: { trigger: 'conditional', condition: 'high_luck' },
+            choices: [
+                { text: '紧紧抓住', effects: { intelligence: 2, charisma: 2, luck: 2 }, probability: 0.4 },
+                { text: '谨慎观望', effects: { intelligence: 1, constitution: -1 }, probability: 0.6 },
+                { text: '错失良机', effects: { luck: -2 } }
+            ]
+        },
+        {
+            id: 'universal_lottery_win',
+            title: '幸运降临',
+            description: '你最近运气特别好，各种好事接连不断。',
+            type: 'luck',
+            priority: 70,
+            choices: [
+                { text: '乘胜追击', effects: { luck: 2, charisma: 1 }, probability: 0.5 },
+                { text: '见好就收', effects: { luck: 1, constitution: 1 } }
             ]
         }
     ]

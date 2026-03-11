@@ -945,6 +945,41 @@ body {
     color: var(--primary-light);
 }
 
+.event-badge.priority-critical {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+}
+
+.event-badge.priority-high {
+    background: rgba(251, 146, 60, 0.2);
+    color: #fdba74;
+}
+
+.event-badge.type-milestone {
+    background: rgba(168, 85, 247, 0.2);
+    color: #d8b4fe;
+}
+
+.event-badge.type-career {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+}
+
+.event-badge.type-wealth {
+    background: rgba(234, 179, 8, 0.2);
+    color: #fde047;
+}
+
+.event-probability {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(251, 191, 36, 0.15);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    color: #fbbf24;
+    margin-top: 10px;
+}
+
 .event-content {
     flex: 1;
     padding: 25px;
@@ -1328,6 +1363,135 @@ body {
     }
 }
 
+/* ===== 弹窗 ===== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    max-width: 90%;
+    max-height: 90%;
+    overflow: hidden;
+    animation: scaleIn 0.3s ease;
+}
+
+.help-modal-content {
+    width: 600px;
+    max-width: 95%;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 25px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.help-section {
+    margin-bottom: 25px;
+}
+
+.help-section:last-child {
+    margin-bottom: 0;
+}
+
+.help-section h3 {
+    font-size: 1.1rem;
+    color: var(--primary-light);
+    margin-bottom: 12px;
+}
+
+.help-section p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.help-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.help-section li {
+    padding: 8px 0;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.help-section li strong {
+    color: var(--text-primary);
+}
+
 /* ===== 响应式设计 ===== */
 @media (max-width: 900px) {
     .game-main {
@@ -1401,6 +1565,24 @@ body {
     .achievements-grid {
         grid-template-columns: 1fr;
     }
+    
+    .title-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .title-actions .btn {
+        width: 100%;
+    }
+    
+    .modal-content {
+        margin: 10px;
+        max-height: 85vh;
+    }
+    
+    .help-modal-content {
+        width: 100%;
+    }
 }
 
 @media (max-width: 400px) {
@@ -1431,6 +1613,145 @@ body {
     
     .event-title {
         font-size: 1.2rem;
+    }
+}
+
+/* ===== 触摸设备优化 ===== */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        min-height: 48px;
+        padding: 14px 24px;
+    }
+    
+    .choice-btn {
+        min-height: 52px;
+        padding: 16px 20px;
+        font-size: 1rem;
+    }
+    
+    .control-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .gender-btn {
+        min-height: 56px;
+        padding: 12px 20px;
+    }
+    
+    .zodiac-btn {
+        min-height: 48px;
+        min-width: 48px;
+    }
+    
+    .talent-card {
+        min-height: 60px;
+        padding: 12px;
+    }
+    
+    .event-badge {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .modal-close {
+        min-width: 48px;
+        min-height: 48px;
+    }
+    
+    .back-btn {
+        min-height: 44px;
+        padding: 10px 16px;
+    }
+    
+    .choice-btn:hover {
+        transform: none;
+    }
+    
+    .choice-btn:active {
+        transform: scale(0.98);
+        background: var(--primary);
+    }
+    
+    .btn:hover {
+        transform: none;
+    }
+    
+    .btn:active {
+        transform: scale(0.98);
+    }
+}
+
+/* ===== 高分辨率屏幕优化 ===== */
+@media (min-width: 1400px) {
+    .game-container {
+        max-width: 1400px;
+    }
+    
+    .game-main {
+        gap: 25px;
+    }
+    
+    .character-panel {
+        gap: 20px;
+    }
+    
+    .event-card {
+        min-height: 500px;
+    }
+}
+
+/* ===== 横屏模式优化 ===== */
+@media (orientation: landscape) and (max-height: 500px) {
+    .title-screen {
+        padding: 20px;
+    }
+    
+    .game-title {
+        margin-bottom: 10px;
+    }
+    
+    .title-main {
+        font-size: 2rem;
+    }
+    
+    .title-sub {
+        font-size: 1rem;
+    }
+    
+    .title-actions {
+        flex-direction: row;
+    }
+    
+    .game-header {
+        padding: 8px 15px;
+    }
+    
+    .game-footer {
+        padding: 8px 15px;
+    }
+}
+
+/* ===== 深色模式支持 ===== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-dark: #0f0f0f;
+        --bg-card: #1a1a1a;
+    }
+}
+
+/* ===== 减少动画模式 ===== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .btn-glow {
+        display: none;
     }
 }
 

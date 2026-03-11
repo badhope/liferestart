@@ -69,6 +69,29 @@ class Game {
             });
         }
         
+        // 游戏指南按钮
+        const helpBtn = document.getElementById('help-btn');
+        const helpModal = document.getElementById('help-modal');
+        const closeHelpBtn = document.getElementById('close-help');
+        
+        if (helpBtn && helpModal) {
+            helpBtn.addEventListener('click', () => {
+                helpModal.classList.add('active');
+            });
+        }
+        
+        if (closeHelpBtn && helpModal) {
+            closeHelpBtn.addEventListener('click', () => {
+                helpModal.classList.remove('active');
+            });
+            
+            helpModal.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    helpModal.classList.remove('active');
+                }
+            });
+        }
+        
         // 确认创建按钮
         const confirmBtn = document.getElementById('confirm-create');
         if (confirmBtn) {

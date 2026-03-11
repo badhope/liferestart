@@ -8,14 +8,15 @@ const STORY_CONFIG = {
     /**
      * 剧情版本信息
      */
-    version: '1.2.1',
-    lastUpdated: '2026-03-10',
+    version: '1.3.0',
+    lastUpdated: '2026-03-11',
     author: 'CodeCritic',
     
     /**
      * 剧情更新历史
      */
     changelog: [
+        { version: '1.3.0', date: '2026-03-11', changes: '事件系统重构，优先级排序，事件链，调试工具，UI优化，多平台适配' },
         { version: '1.2.0', date: '2026-03-10', changes: '剧情系统重构，扩展至100+事件' },
         { version: '1.1.0', date: '2026-03-10', changes: '新增天赋系统，UI优化' },
         { version: '1.0.0', date: '2026-03-10', changes: '初始版本发布' }

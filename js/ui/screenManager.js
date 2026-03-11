@@ -237,10 +237,47 @@ class UIUpdater {
      * @param {Object} event - 事件对象
      */
     updateEvent(event) {
+        // 获取事件容器元素
+        const eventContainer = document.querySelector('.event-header');
+        
+        // 构建徽章HTML
+        let badgeHtml = '';
+        
+        // 根据优先级添加徽章
+        if (event._priority >= 100 || event.type === 'milestone') {
+            badgeHtml += '<span class="event-badge priority-critical type-milestone">⭐ 人生转折点</span>';
+        } else if (event._priority >= 75 || event.type === 'career') {
+            badgeHtml += '<span class="event-badge priority-high type-career">💼 职业发展</span>';
+        } else if (event.type === 'wealth') {
+            badgeHtml += '<span class="event-badge type-wealth">💰 财富机遇</span>';
+        } else if (event.type === 'relationship') {
+            badgeHtml += '<span class="event-badge">💕 人际关系</span>';
+        } else if (event.type === 'health') {
+            badgeHtml += '<span class="event-badge">🏥 健康医疗</span>';
+        } else if (event.type === 'adventure') {
+            badgeHtml += '<span class="event-badge">🗺️ 冒险探索</span>';
+        } else if (event.type === 'opportunity') {
+            badgeHtml += '<span class="event-badge priority-high">🎯 重要机遇</span>';
+        } else {
+            badgeHtml += '<span class="event-badge">📌 随机事件</span>';
+        }
+        
+        // 更新事件头部徽章
+        if (eventContainer) {
+            eventContainer.innerHTML = badgeHtml;
+        }
+        
         // 更新事件文本
         const eventTextEl = document.getElementById('event-text');
         if (eventTextEl) {
             let html = `<h3>${event.title}</h3><p>${event.description}</p>`;
+            
+            // 如果有概率显示，添加提示
+            if (event.probability !== undefined) {
+                const percent = Math.round(event.probability * 100);
+                html += `<p class="event-probability">成功率: ${percent}%</p>`;
+            }
+            
             eventTextEl.innerHTML = html;
         }
 
@@ -252,7 +289,26 @@ class UIUpdater {
             event.choices.forEach((choice, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'choice-btn';
-                btn.textContent = choice.text;
+                
+                // 构建按钮文本
+                let btnText = choice.text;
+                if (choice.probability !== undefined) {
+                    btnText += ` (${Math.round(choice.probability * 100)}%)`;
+                }
+                if (choice.money > 0) {
+                    btnText += ` +${Utils.formatNumber(choice.money)}元`;
+                } else if (choice.money < 0) {
+                    btnText += ` ${Utils.formatNumber(choice.money)}元`;
+                }
+                if (choice.cost) {
+                    btnText += ` 花费${Utils.formatNumber(choice.cost)}元`;
+                }
+                
+                btn.textContent = btnText;
+                
+                // 添加效果预览
+                btn.title = this.getChoiceEffectsPreview(choice);
+                
                 btn.addEventListener('click', () => {
                     if (window.game) {
                         window.game.makeChoice(index);
@@ -261,6 +317,25 @@ class UIUpdater {
                 choicesEl.appendChild(btn);
             });
         }
+    }
+
+    /**
+     * 获取选项效果预览
+     * @param {Object} choice - 选项对象
+     * @returns {string} 预览文本
+     */
+    getChoiceEffectsPreview(choice) {
+        if (!choice.effects) return '';
+        
+        const parts = [];
+        const effects = choice.effects;
+        
+        if (effects.intelligence) parts.push(`智力${effects.intelligence > 0 ? '+' : ''}${effects.intelligence}`);
+        if (effects.charisma) parts.push(`魅力${effects.charisma > 0 ? '+' : ''}${effects.charisma}`);
+        if (effects.constitution) parts.push(`体质${effects.constitution > 0 ? '+' : ''}${effects.constitution}`);
+        if (effects.luck) parts.push(`运气${effects.luck > 0 ? '+' : ''}${effects.luck}`);
+        
+        return parts.join(', ');
     }
 
     /**

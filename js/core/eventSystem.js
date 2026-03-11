@@ -1,14 +1,162 @@
 /**
  * 事件系统
  * 负责事件的触发、选择、结果计算等逻辑
+ * 支持事件优先级、事件链、调试工具等高级功能
  */
 
 /**
- * 获取指定人生阶段的所有事件
- * @param {string} stageId - 人生阶段ID (baby/child/teen/young/middle/elder)
- * @returns {Array} 事件数组
+ * 事件优先级配置
  */
-function getAllEventsForStage(stageId) {
+const EVENT_PRIORITY = {
+    CRITICAL: 100,   // 关键事件（人生转折点）
+    HIGH: 75,       // 高优先级事件
+    NORMAL: 50,     // 普通事件
+    LOW: 25,        // 低优先级事件
+    RANDOM: 10      // 随机事件
+};
+
+/**
+ * 事件链管理器
+ */
+class EventChainManager {
+    constructor() {
+        this.activeChains = new Map();
+        this.completedChains = new Set();
+    }
+
+    registerChain(chainId, events, conditions) {
+        this.activeChains.set(chainId, {
+            events: events,
+            currentIndex: 0,
+            conditions: conditions,
+            progress: 0
+        });
+    }
+
+    checkChainProgress(player, eventId) {
+        for (const [chainId, chain] of this.activeChains) {
+            if (chain.currentIndex < chain.events.length) {
+                const expectedEvent = chain.events[chain.currentIndex];
+                if (expectedEvent.id === eventId) {
+                    chain.currentIndex++;
+                    chain.progress = chain.currentIndex / chain.events.length;
+                    
+                    if (chain.currentIndex >= chain.events.length) {
+                        this.completedChains.add(chainId);
+                        this.activeChains.delete(chainId);
+                        return { completed: true, chainId };
+                    }
+                    return { progress: chain.progress, chainId };
+                }
+            }
+        }
+        return null;
+    }
+
+    getActiveChain() {
+        for (const [chainId, chain] of this.activeChains) {
+            if (chain.currentIndex < chain.events.length) {
+                return chain.events[chain.currentIndex];
+            }
+        }
+        return null;
+    }
+
+    isEventInChain(eventId) {
+        for (const [chainId, chain] of this.activeChains) {
+            const targetEvent = chain.events[chain.currentIndex];
+            if (targetEvent && targetEvent.id === eventId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    reset() {
+        this.activeChains.clear();
+        this.completedChains.clear();
+    }
+}
+
+/**
+ * 事件调试工具
+ */
+const EventDebugger = {
+    enabled: false,
+    eventLog: [],
+    maxLogSize: 100,
+
+    enable() {
+        this.enabled = true;
+        console.log('[事件调试] 调试模式已开启');
+    },
+
+    disable() {
+        this.enabled = false;
+        console.log('[事件调试] 调试模式已关闭');
+    },
+
+    log(event, action, details = {}) {
+        if (!this.enabled) return;
+
+        const logEntry = {
+            timestamp: Date.now(),
+            eventId: event.id,
+            eventTitle: event.title,
+            action,
+            details,
+            playerAge: window.game?.player?.age || 0
+        };
+
+        this.eventLog.push(logEntry);
+        if (this.eventLog.length > this.maxLogSize) {
+            this.eventLog.shift();
+        }
+
+        console.log(`[事件调试] ${action}: ${event.title}`, details);
+    },
+
+    getLog() {
+        return [...this.eventLog];
+    },
+
+    clearLog() {
+        this.eventLog = [];
+        console.log('[事件调试] 日志已清空');
+    },
+
+    exportLog() {
+        return JSON.stringify(this.eventLog, null, 2);
+    },
+
+    getEventStats() {
+        const stats = {
+            total: this.eventLog.length,
+            byAction: {},
+            byAge: {}
+        };
+
+        this.eventLog.forEach(entry => {
+            stats.byAction[entry.action] = (stats.byAction[entry.action] || 0) + 1;
+            const ageGroup = Math.floor(entry.playerAge / 10) * 10;
+            stats.byAge[ageGroup] = (stats.byAge[ageGroup] || 0) + 1;
+        });
+
+        return stats;
+    }
+};
+
+if (typeof window !== 'undefined') {
+    window.EventDebugger = EventDebugger;
+}
+
+/**
+ * 获取指定人生阶段的所有事件（带优先级排序）
+ * @param {string} stageId - 人生阶段ID
+ * @param {Object} player - 玩家对象
+ * @returns {Array} 排序后的事件数组
+ */
+function getAllEventsForStage(stageId, player = null) {
     const stageMapping = {
         'baby': 'baby',
         'child': 'child',
@@ -23,14 +171,45 @@ function getAllEventsForStage(stageId) {
         return [];
     }
     
-    // 合并阶段事件和通用事件
     const stageEvents = EVENTS[eventKey] || [];
     const universalEvents = EVENTS.universal || [];
+    const allEvents = [...stageEvents, ...universalEvents];
+
+    if (player) {
+        return sortEventsByPriority(allEvents, player);
+    }
     
-    return [...stageEvents, ...universalEvents];
+    return allEvents;
+}
+
+/**
+ * 根据优先级和玩家属性对事件进行排序
+ * @param {Array} events - 事件数组
+ * @param {Object} player - 玩家对象
+ * @returns {Array} 排序后的事件数组
+ */
+function sortEventsByPriority(events, player) {
+    return events.map(event => {
+        let priority = event.priority || EVENT_PRIORITY.NORMAL;
+        
+        if (player) {
+            if (event.type === 'milestone') {
+                priority = EVENT_PRIORITY.CRITICAL;
+            } else if (event.type === 'career' && player.age >= 18) {
+                priority = EVENT_PRIORITY.HIGH;
+            } else if (event.type === 'relationship' && player.attributes.charisma > 7) {
+                priority = Math.min(priority + 20, EVENT_PRIORITY.HIGH);
+            } else if (event.type === 'health' && player.attributes.constitution < 4) {
+                priority = Math.min(priority + 25, EVENT_PRIORITY.HIGH);
+            }
+        }
+        
+        return { ...event, _priority: priority };
+    }).sort((a, b) => b._priority - a._priority);
 }
 
 class EventSystem {
+
     /**
      * 创建事件系统实例
      * @param {Player} player - 玩家对象
@@ -39,7 +218,8 @@ class EventSystem {
         this.player = player;
         this.currentEvent = null;
         this.eventHistory = [];
-        this.cooldown = 0;  // 事件冷却
+        this.cooldown = 0;
+        this.chainManager = new EventChainManager();
     }
 
     /**
@@ -53,28 +233,58 @@ class EventSystem {
             return null;
         }
 
+        // 首先检查是否有活跃的事件链
+        const chainEvent = this.chainManager.getActiveChain();
+        if (chainEvent) {
+            if (!this.hasEventOccurred(chainEvent.id)) {
+                EventDebugger.log(chainEvent, 'CHAIN_EVENT_TRIGGER');
+                this.cooldown = Utils.randomInt(1, 2);
+                this.currentEvent = chainEvent;
+                return chainEvent;
+            }
+        }
+
         // 根据概率决定是否触发事件
         if (Math.random() > CONFIG.GAME.eventBaseProbability) {
             return null;
         }
 
-        // 获取当前阶段的事件列表
+        // 获取当前阶段的事件列表（带优先级排序）
         const stageId = this.player.lifeStage.id;
-        const availableEvents = getAllEventsForStage(stageId);
+        const availableEvents = getAllEventsForStage(stageId, this.player);
 
         if (availableEvents.length === 0) {
             return null;
         }
 
+        // 优先触发高优先级事件
+        const highPriorityEvents = availableEvents.filter(e => 
+            (e._priority || 50) >= EVENT_PRIORITY.HIGH && !this.hasEventOccurred(e.id)
+        );
+        
+        let selectedEvents = highPriorityEvents.length > 0 
+            ? highPriorityEvents 
+            : availableEvents;
+        
         // 根据属性和运气筛选事件
-        const filteredEvents = this.filterEvents(availableEvents);
+        const filteredEvents = this.filterEvents(selectedEvents);
         
         if (filteredEvents.length === 0) {
             return null;
         }
 
-        // 随机选择一个事件
-        const event = filteredEvents[Utils.randomInt(0, filteredEvents.length - 1)];
+        // 按优先级排序后选择
+        filteredEvents.sort((a, b) => (b._priority || 50) - (a._priority || 50));
+        
+        // 随机选择一个事件（高优先级有更高几率）
+        let eventIndex;
+        if (filteredEvents.length > 1 && (filteredEvents[0]._priority || 50) > (filteredEvents[1]._priority || 50)) {
+            eventIndex = 0; // 高优先级事件直接选择第一个
+        } else {
+            eventIndex = Utils.randomInt(0, filteredEvents.length - 1);
+        }
+        
+        const event = filteredEvents[eventIndex];
         
         // 检查事件概率
         if (event.probability !== undefined) {
@@ -90,6 +300,14 @@ class EventSystem {
         );
 
         this.currentEvent = event;
+        
+        // 调试日志
+        EventDebugger.log(event, 'EVENT_TRIGGER', { 
+            priority: event._priority,
+            age: this.player.age,
+            stage: stageId
+        });
+        
         return event;
     }
 
@@ -146,6 +364,12 @@ class EventSystem {
             return { success: false, message: '无效的选择' };
         }
 
+        // 调试日志
+        EventDebugger.log(event, 'EVENT_CHOICE', { 
+            choiceIndex, 
+            choice: choice.text 
+        });
+
         // 计算选择结果
         const result = this.calculateResult(choice);
 
@@ -162,6 +386,20 @@ class EventSystem {
             effects: appliedEffects
         });
 
+        // 检查事件链进度
+        const chainResult = this.chainManager.checkChainProgress(this.player, event.id);
+        if (chainResult) {
+            EventDebugger.log(event, 'CHAIN_PROGRESS', chainResult);
+            if (chainResult.completed) {
+                result.messages.push(`🎉 事件链完成: ${chainResult.chainId}`);
+            }
+        }
+
+        // 检查是否有后续事件需要触发
+        if (event.nextEvent) {
+            this.queueNextEvent(event.nextEvent);
+        }
+
         // 清理当前事件
         this.currentEvent = null;
 
@@ -172,8 +410,37 @@ class EventSystem {
             result: result,
             appliedEffects: appliedEffects,
             newAttributes: { ...this.player.attributes },
-            attributeChanges: appliedEffects
+            attributeChanges: appliedEffects,
+            chainProgress: chainResult
         };
+    }
+
+    /**
+     * 队列下一个事件
+     * @param {string|Object} nextEvent - 下一个事件ID或事件对象
+     */
+    queueNextEvent(nextEvent) {
+        if (typeof nextEvent === 'string') {
+            const eventData = this.findEventById(nextEvent);
+            if (eventData) {
+                this.currentEvent = eventData;
+            }
+        } else if (nextEvent.trigger === 'immediate') {
+            this.currentEvent = nextEvent;
+        }
+    }
+
+    /**
+     * 根据ID查找事件
+     * @param {string} eventId - 事件ID
+     * @returns {Object|null} 事件对象
+     */
+    findEventById(eventId) {
+        for (const key in EVENTS) {
+            const found = EVENTS[key].find(e => e.id === eventId);
+            if (found) return found;
+        }
+        return null;
     }
 
     /**
