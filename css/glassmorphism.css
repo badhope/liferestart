@@ -3,8 +3,7 @@
    Glassmorphism Design System v2.0
    ======================================== */
 
-/* ===== 字体系统 ===== */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800;900&display=swap');
+/* 字体已在 HTML 中统一加载，避免重复 */
 
 /* ===== 设计系统核心变量 ===== */
 :root {
